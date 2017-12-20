@@ -71,4 +71,86 @@ function putDataIntoServer(deviceName,objectId, istanceNumber, itemId, value) {
   .done();
 }
 
-export default {fetchDataFromServer: fetchDataFromServer, putDataIntoServer:putDataIntoServer, fetchObjectSpecsFromServer: fetchObjectSpecsFromServer}
+function postDataIntoServer(deviceName,objectId, istanceNumber, itemId) {
+  const url = serverIp+"/"+deviceName+ "/" + objectId + "/" + istanceNumber + "/" + itemId;
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  })
+  .then((response) => {
+    var risposta = null;
+    if (response.status == 200){
+        risposta = "Operazioen Eseguita correttamente"
+    } else{
+      risposta = "Errore durante l'esecuzione dell'operazione." + response._bodyText
+    }
+    Alert.alert(
+      'HTTP Request Response',
+      risposta,
+      [
+        {text: 'OK', onPress: () => console.log('OK Pressed')},
+      ],
+      { cancelable: false }
+    )
+  })
+  .catch((error) => {
+      console.log(error);
+      Alert.alert(
+	      'Errore richiesta HTTP',
+	      "Si è verificato un errore, controllare la connessione a internet ed eventualmente ricaricare l'applicazione",
+	      [
+	        {text: 'OK', onPress: () => console.log('OK Pressed')},
+	      ],
+	      { cancelable: false }
+	    )
+    })
+  .done();
+}
+
+function postDataIntoServerWithParams(deviceName,objectId, istanceNumber, itemId, value) {
+  const url = serverIp+"/"+deviceName+ "/" + objectId + "/" + istanceNumber + "/" + itemId;
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      value: value
+    })
+  })
+  .then((response) => {
+    var risposta = null;
+    if (response.status == 200){
+        risposta = "Operazioen Eseguita correttamente"
+    } else{
+      risposta = "Errore durante l'esecuzione dell'operazione." + response._bodyText
+    }
+    Alert.alert(
+      'HTTP Request Response',
+      risposta,
+      [
+        {text: 'OK', onPress: () => console.log('OK Pressed')},
+      ],
+      { cancelable: false }
+    )
+  })
+  .catch((error) => {
+      console.log(error);
+      Alert.alert(
+	      'Errore richiesta HTTP',
+	      "Si è verificato un errore, controllare la connessione a internet ed eventualmente ricaricare l'applicazione",
+	      [
+	        {text: 'OK', onPress: () => console.log('OK Pressed')},
+	      ],
+	      { cancelable: false }
+	    )
+    })
+  .done();
+}
+
+
+export default {fetchDataFromServer: fetchDataFromServer, putDataIntoServer:putDataIntoServer, fetchObjectSpecsFromServer: fetchObjectSpecsFromServer, postDataIntoServer: postDataIntoServer, postDataIntoServerWithParams: postDataIntoServerWithParams}

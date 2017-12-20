@@ -1,6 +1,6 @@
 (function(global) {
 
-global.__DEV__ = true;
+global.__DEV__ = false;
 
 global.__BUNDLE_START_TIME__ = global.nativePerformanceNow ? global.nativePerformanceNow() : Date.now();
 })(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
@@ -70286,12 +70286,12 @@ var Home = function (_Component) {
 					title: "D",
 					__source: {
 						fileName: _jsxFileName,
-						lineNumber: 142
+						lineNumber: 154
 					}
 				}),
 				__source: {
 					fileName: _jsxFileName,
-					lineNumber: 134
+					lineNumber: 146
 				}
 			});
 		};
@@ -70299,7 +70299,7 @@ var Home = function (_Component) {
 		_this._renderHeader = function () {
 			return _react2.default.createElement(_reactNativeElements.SearchBar, { placeholder: "Type Here...", lightTheme: true, round: true, __source: {
 					fileName: _jsxFileName,
-					lineNumber: 153
+					lineNumber: 165
 				}
 			});
 		};
@@ -70316,12 +70316,12 @@ var Home = function (_Component) {
 					},
 					__source: {
 						fileName: _jsxFileName,
-						lineNumber: 159
+						lineNumber: 171
 					}
 				},
 				_react2.default.createElement(ActivityIndicator, { animating: true, size: "large", __source: {
 						fileName: _jsxFileName,
-						lineNumber: 166
+						lineNumber: 178
 					}
 				})
 			);
@@ -70337,7 +70337,7 @@ var Home = function (_Component) {
 				},
 				__source: {
 					fileName: _jsxFileName,
-					lineNumber: 173
+					lineNumber: 185
 				}
 			});
 		};
@@ -70364,7 +70364,21 @@ var Home = function (_Component) {
 	babelHelpers.createClass(Home, [{
 		key: "componentDidMount",
 		value: function componentDidMount() {
+			console.log('component mounted');
+			this.setState({
+				serverNotFound: true
+			});
 			this.startZeroConfSearch();
+		}
+	}, {
+		key: "componentWillMount",
+		value: function componentWillMount() {
+			console.log('component will mount');
+		}
+	}, {
+		key: "componentWillUnmount",
+		value: function componentWillUnmount() {
+			console.log('component will unmount');
 		}
 	}, {
 		key: "render",
@@ -70373,19 +70387,19 @@ var Home = function (_Component) {
 				_reactNative.View,
 				{ style: styles.statusBar, __source: {
 						fileName: _jsxFileName,
-						lineNumber: 197
+						lineNumber: 209
 					}
 				},
 				_react2.default.createElement(_BarraDiStato2.default, { titolo: "Home", leftArrow: false, rightButton: true, navigation: this.props.navigation, __source: {
 						fileName: _jsxFileName,
-						lineNumber: 198
+						lineNumber: 210
 					}
 				}),
 				_react2.default.createElement(
 					_reactNative.View,
 					{ style: styles.parent, __source: {
 							fileName: _jsxFileName,
-							lineNumber: 199
+							lineNumber: 211
 						}
 					},
 					_react2.default.createElement(_reactNative.FlatList, {
@@ -70401,7 +70415,7 @@ var Home = function (_Component) {
 						onRefresh: this._handleRefresh,
 						__source: {
 							fileName: _jsxFileName,
-							lineNumber: 200
+							lineNumber: 212
 						}
 					})
 				)
@@ -70498,7 +70512,62 @@ function putDataIntoServer(deviceName, objectId, istanceNumber, itemId, value) {
   }).done();
 }
 
-exports.default = { fetchDataFromServer: fetchDataFromServer, putDataIntoServer: putDataIntoServer, fetchObjectSpecsFromServer: fetchObjectSpecsFromServer };
+function postDataIntoServer(deviceName, objectId, istanceNumber, itemId) {
+  var url = _Constants.serverIp + "/" + deviceName + "/" + objectId + "/" + istanceNumber + "/" + itemId;
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }).then(function (response) {
+    var risposta = null;
+    if (response.status == 200) {
+      risposta = "Operazioen Eseguita correttamente";
+    } else {
+      risposta = "Errore durante l'esecuzione dell'operazione." + response._bodyText;
+    }
+    _reactNative.Alert.alert('HTTP Request Response', risposta, [{ text: 'OK', onPress: function onPress() {
+        return console.log('OK Pressed');
+      } }], { cancelable: false });
+  }).catch(function (error) {
+    console.log(error);
+    _reactNative.Alert.alert('Errore richiesta HTTP', "Si è verificato un errore, controllare la connessione a internet ed eventualmente ricaricare l'applicazione", [{ text: 'OK', onPress: function onPress() {
+        return console.log('OK Pressed');
+      } }], { cancelable: false });
+  }).done();
+}
+
+function postDataIntoServerWithParams(deviceName, objectId, istanceNumber, itemId, value) {
+  var url = _Constants.serverIp + "/" + deviceName + "/" + objectId + "/" + istanceNumber + "/" + itemId;
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      value: value
+    })
+  }).then(function (response) {
+    var risposta = null;
+    if (response.status == 200) {
+      risposta = "Operazioen Eseguita correttamente";
+    } else {
+      risposta = "Errore durante l'esecuzione dell'operazione." + response._bodyText;
+    }
+    _reactNative.Alert.alert('HTTP Request Response', risposta, [{ text: 'OK', onPress: function onPress() {
+        return console.log('OK Pressed');
+      } }], { cancelable: false });
+  }).catch(function (error) {
+    console.log(error);
+    _reactNative.Alert.alert('Errore richiesta HTTP', "Si è verificato un errore, controllare la connessione a internet ed eventualmente ricaricare l'applicazione", [{ text: 'OK', onPress: function onPress() {
+        return console.log('OK Pressed');
+      } }], { cancelable: false });
+  }).done();
+}
+
+exports.default = { fetchDataFromServer: fetchDataFromServer, putDataIntoServer: putDataIntoServer, fetchObjectSpecsFromServer: fetchObjectSpecsFromServer, postDataIntoServer: postDataIntoServer, postDataIntoServerWithParams: postDataIntoServerWithParams };
 }, 625, null, "LWM2MProject/App/Components/HttpRequest.js");
 __d(/* LWM2MProject/App/Constants.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
@@ -71898,6 +71967,126 @@ var SectionListLine = function (_Component) {
       });
     };
 
+    _this._onPressExecuteAction = function (objectId, istanceNumber, itemId) {
+      _HttpRequest2.default.postDataIntoServer(_this.state.deviceName, objectId, istanceNumber, itemId);
+    };
+
+    _this._onPressExecuteActionWithParams = function (objectId, istanceNumber, itemId, itemName, type) {
+      _reactNativeDialogComponent2.default.show({
+        title: _react2.default.createElement(
+          _reactNative.View,
+          { style: styles.viewTitle, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 55
+            }
+          },
+          _react2.default.createElement(
+            _reactNative.Text,
+            { style: styles.title, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 56
+              }
+            },
+            "Update ",
+            itemName,
+            " value"
+          )
+        ),
+        width: _reactNative.Dimensions.get('window').width - 100,
+        titleAlign: 'center',
+        SlideAnimation: "bottom",
+        animationDuration: 200,
+        ScaleAnimation: new _reactNativeDialogComponent.ScaleAnimation(),
+        children: _react2.default.createElement(
+          _reactNativeDialogComponent.DialogContent,
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 67
+            }
+          },
+          _react2.default.createElement(
+            _reactNative.View,
+            {
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 68
+              }
+            },
+            _react2.default.createElement(
+              _reactNative.Text,
+              { style: styles.text, __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 69
+                }
+              },
+              itemName
+            ),
+            _react2.default.createElement(_reactNative.TextInput, {
+              style: styles.input,
+              onChangeText: function onChangeText(text) {
+                return _this.value = text;
+              },
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 72
+              }
+            })
+          ),
+          _react2.default.createElement(
+            _reactNative.View,
+            { style: styles.bottom, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 77
+              }
+            },
+            _react2.default.createElement(
+              _reactNativeButton2.default,
+              {
+                containerStyle: [styles.buttonDialog, { marginRight: 20 }],
+                style: styles.textButton,
+                onPress: function onPress() {
+                  return _reactNativeDialogComponent2.default.dismiss();
+                },
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 78
+                }
+              },
+              " Chiudi"
+            ),
+            _react2.default.createElement(
+              _reactNativeButton2.default,
+              {
+                style: styles.textButton,
+                containerStyle: styles.buttonDialog,
+                onPress: function onPress() {
+                  return _this._makeExecute(objectId, istanceNumber, itemId, _this.value, type);
+                },
+                accessibilityLabel: "Clicca per confermare la modifica",
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 84
+                }
+              },
+              " Conferma "
+            )
+          )
+        )
+      });
+    };
+
+    _this._makeExecute = function (objectId, istanceNumber, itemId, value, type) {
+      var correctValue;
+      if (type == "Integer" || type == "integer") {
+        correctValue = parseInt(value);
+      } else {
+        correctValue = value;
+      }
+      _HttpRequest2.default.postDataIntoServerWithParams(_this.state.deviceName, objectId, istanceNumber, itemId, correctValue);
+      _reactNativeDialogComponent2.default.dismiss();
+    };
+
     _this._updateAction = function (objectId, istanceNumber, itemId, value, type) {
       var correctValue;
       if (type == "Integer" || type == "integer") {
@@ -71906,8 +72095,10 @@ var SectionListLine = function (_Component) {
         correctValue = value;
       }
       _HttpRequest2.default.putDataIntoServer(_this.state.deviceName, objectId, istanceNumber, itemId, correctValue);
+      setTimeout(function () {
+        _this._onPressReadAction(objectId, istanceNumber, itemId);
+      }, 3000);
       _reactNativeDialogComponent2.default.dismiss();
-      _this._onPressReadAction(objectId, istanceNumber, itemId);
     };
 
     _this._onPressObserveAction = function (objectId, istanceNumber, itemId) {
@@ -71934,14 +72125,14 @@ var SectionListLine = function (_Component) {
           _reactNative.View,
           { style: styles.viewTitle, __source: {
               fileName: _jsxFileName,
-              lineNumber: 79
+              lineNumber: 141
             }
           },
           _react2.default.createElement(
             _reactNative.Text,
             { style: styles.title, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 80
+                lineNumber: 142
               }
             },
             "Update ",
@@ -71959,7 +72150,7 @@ var SectionListLine = function (_Component) {
           {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 91
+              lineNumber: 153
             }
           },
           _react2.default.createElement(
@@ -71967,14 +72158,14 @@ var SectionListLine = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 92
+                lineNumber: 154
               }
             },
             _react2.default.createElement(
               _reactNative.Text,
               { style: styles.text, __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 93
+                  lineNumber: 155
                 }
               },
               itemName
@@ -71987,7 +72178,7 @@ var SectionListLine = function (_Component) {
               },
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 96
+                lineNumber: 158
               }
             })
           ),
@@ -71995,7 +72186,7 @@ var SectionListLine = function (_Component) {
             _reactNative.View,
             { style: styles.bottom, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 102
+                lineNumber: 164
               }
             },
             _react2.default.createElement(
@@ -72006,10 +72197,10 @@ var SectionListLine = function (_Component) {
                 onPress: function onPress() {
                   return _reactNativeDialogComponent2.default.dismiss();
                 },
-                accessibilityLabel: "Clicca per effettuare l'update del valore",
+                accessibilityLabel: "Clicca per chiudere la finestra",
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 103
+                  lineNumber: 165
                 }
               },
               " Chiudi"
@@ -72022,10 +72213,10 @@ var SectionListLine = function (_Component) {
                 onPress: function onPress() {
                   return _this._updateAction(objectId, istanceNumber, itemId, _this.value, type);
                 },
-                accessibilityLabel: "Clicca per effettuare l'update del valore",
+                accessibilityLabel: "Clicca per confermare la modifica",
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 110
+                  lineNumber: 172
                 }
               },
               " Conferma "
@@ -72068,38 +72259,172 @@ var SectionListLine = function (_Component) {
           objectId = _props.objectId,
           istanceNumber = _props.istanceNumber;
 
-      var buttonWrite;
+      var operations;
       if (detail[1] == "RW") {
         var istance = istanceNumber;
-        buttonWrite = _react2.default.createElement(
-          _reactNativeButton2.default,
-          {
-            containerStyle: [styles.containerButton, { marginRight: 7 }],
-            style: styles.button,
-            onPress: function onPress() {
-              return _this2._onPressWriteAction(objectId, istance, item.id, detail[0], detail[2], _this2.state.itemValue);
-            },
-            accessibilityLabel: "Clicca per effettuare l'update del valore",
-            __source: {
+        operations = _react2.default.createElement(
+          _reactNative.View,
+          { style: styles.operations, __source: {
               fileName: _jsxFileName,
-              lineNumber: 149
+              lineNumber: 211
             }
           },
-          " Write"
+          _react2.default.createElement(
+            _reactNativeButton2.default,
+            {
+              containerStyle: [styles.containerButton, { marginRight: 7 }],
+              style: styles.button,
+              onPress: function onPress() {
+                return _this2._onPressWriteAction(objectId, istance, item.id, detail[0], detail[2], _this2.state.itemValue);
+              },
+              accessibilityLabel: "Clicca per effettuare la modifica del valore",
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 212
+              }
+            },
+            " Write"
+          ),
+          _react2.default.createElement(
+            _reactNativeButton2.default,
+            {
+              containerStyle: [this.state.pressStatus ? styles.containerButtonAfterPressed : styles.containerButton, { marginRight: 7 }],
+              style: styles.button,
+              onPress: function onPress() {
+                return _this2._onPressObserveAction(objectId, istance, item.id);
+              },
+              accessibilityLabel: "Clicca per osservare la risorsa",
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 219
+              }
+            },
+            " Observe"
+          ),
+          _react2.default.createElement(
+            _reactNativeButton2.default,
+            {
+              containerStyle: styles.containerButton,
+              style: styles.button,
+              onPress: function onPress() {
+                return _this2._onPressReadAction(objectId, istance, item.id);
+              },
+              accessibilityLabel: "Clicca per leggere il valore della risorsa",
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 226
+              }
+            },
+            " Read"
+          )
+        );
+      } else if (detail[1] == "R") {
+        var istance = istanceNumber;
+        operations = _react2.default.createElement(
+          _reactNative.View,
+          { style: styles.operations, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 237
+            }
+          },
+          _react2.default.createElement(
+            _reactNativeButton2.default,
+            {
+              containerStyle: [this.state.pressStatus ? styles.containerButtonAfterPressed : styles.containerButton, { marginRight: 7 }],
+              style: styles.button,
+              onPress: function onPress() {
+                return _this2._onPressObserveAction(objectId, istance, item.id);
+              },
+              accessibilityLabel: "Clicca per osservare la risorsa",
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 238
+              }
+            },
+            " Observe"
+          ),
+          _react2.default.createElement(
+            _reactNativeButton2.default,
+            {
+              containerStyle: styles.containerButton,
+              style: styles.button,
+              onPress: function onPress() {
+                return _this2._onPressReadAction(objectId, istance, item.id);
+              },
+              accessibilityLabel: "Clicca per leggere la risorsa",
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 245
+              }
+            },
+            " Read"
+          )
+        );
+      } else if (detail[1] == "E") {
+        var istance = istanceNumber;
+        operations = _react2.default.createElement(
+          _reactNative.View,
+          { style: styles.operations, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 256
+            }
+          },
+          _react2.default.createElement(
+            _reactNativeButton2.default,
+            {
+              containerStyle: styles.containerButton,
+              style: styles.button,
+              onPress: function onPress() {
+                return _this2._onPressExecuteAction(objectId, istance, item.id);
+              },
+              accessibilityLabel: "Clicca per eseguire l'execute",
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 257
+              }
+            },
+            " Execute"
+          ),
+          _react2.default.createElement(
+            _reactNativeButton2.default,
+            {
+              containerStyle: styles.containerButton,
+              style: styles.button,
+              onPress: function onPress() {
+                return _this2._onPressExecuteActionWithParams(objectId, istance, item.id, detail[0], detail[2]);
+              },
+              accessibilityLabel: "Clicca per eseguire l'excute con parametro",
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 264
+              }
+            },
+            " ExecuteWithParams"
+          )
+        );
+      } else if (detail[1] == "NONE") {
+        operations = _react2.default.createElement(
+          _reactNative.View,
+          { style: styles.operations, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 274
+            }
+          },
+          " "
         );
       }
       return _react2.default.createElement(
         _reactNative.View,
         { style: styles.container, __source: {
             fileName: _jsxFileName,
-            lineNumber: 158
+            lineNumber: 277
           }
         },
         _react2.default.createElement(
           _reactNative.Text,
           { style: styles.id, __source: {
               fileName: _jsxFileName,
-              lineNumber: 159
+              lineNumber: 278
             }
           },
           item.id
@@ -72108,7 +72433,7 @@ var SectionListLine = function (_Component) {
           _reactNative.Text,
           { style: styles.name, __source: {
               fileName: _jsxFileName,
-              lineNumber: 160
+              lineNumber: 279
             }
           },
           _react2.default.createElement(
@@ -72116,7 +72441,7 @@ var SectionListLine = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 161
+                lineNumber: 280
               }
             },
             detail[0]
@@ -72125,7 +72450,7 @@ var SectionListLine = function (_Component) {
             _reactNative.Text,
             { style: { color: "#CCCAC9", fontSize: 10 }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 162
+                lineNumber: 281
               }
             },
             " (",
@@ -72141,52 +72466,12 @@ var SectionListLine = function (_Component) {
           _reactNative.Text,
           { style: styles.value, __source: {
               fileName: _jsxFileName,
-              lineNumber: 164
+              lineNumber: 283
             }
           },
           this.state.itemValue
         ),
-        _react2.default.createElement(
-          _reactNative.View,
-          { style: styles.operations, __source: {
-              fileName: _jsxFileName,
-              lineNumber: 165
-            }
-          },
-          buttonWrite,
-          _react2.default.createElement(
-            _reactNativeButton2.default,
-            {
-              containerStyle: [this.state.pressStatus ? styles.containerButtonAfterPressed : styles.containerButton, { marginRight: 7 }],
-              style: styles.button,
-              onPress: function onPress() {
-                return _this2._onPressObserveAction(objectId, istanceNumber, item.id);
-              },
-              accessibilityLabel: "Clicca per effettuare l'update del valore",
-              __source: {
-                fileName: _jsxFileName,
-                lineNumber: 167
-              }
-            },
-            " Observe"
-          ),
-          _react2.default.createElement(
-            _reactNativeButton2.default,
-            {
-              containerStyle: styles.containerButton,
-              style: styles.button,
-              onPress: function onPress() {
-                return _this2._onPressReadAction(objectId, istanceNumber, item.id);
-              },
-              accessibilityLabel: "Clicca per effettuare l'update del valore",
-              __source: {
-                fileName: _jsxFileName,
-                lineNumber: 174
-              }
-            },
-            " Read"
-          )
-        )
+        operations
       );
     }
   }]);
@@ -72278,6 +72563,7 @@ var styles = _reactNative.StyleSheet.create({
     color: 'white'
   }
 });
+
 exports.default = SectionListLine;
 }, 651, null, "LWM2MProject/App/Components/SectionListLine.js");
 __d(/* react-native-button/Button.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {

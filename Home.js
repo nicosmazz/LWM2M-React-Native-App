@@ -44,7 +44,7 @@ class Home extends Component {
 			});
 			this.setState({
 				serverNotFound: false
-			})
+			});
 			zeroconf.stop();
 			this.makeRemoteRequest();
 		}
@@ -80,7 +80,19 @@ class Home extends Component {
 	}
 
 	componentDidMount() {
+		 console.log('component mounted');
+		this.setState({
+			serverNotFound: true
+		})
 		this.startZeroConfSearch();
+	}
+
+	componentWillMount() {
+	 console.log('component will mount');
+ 	}
+
+	componentWillUnmount(){
+		console.log('component will unmount');
 	}
 
 	makeRemoteRequest = () => {
@@ -149,24 +161,24 @@ class Home extends Component {
 		);
 	};
 
-_renderHeader = () => {
-	return <SearchBar placeholder="Type Here..." lightTheme round />;
-};
-
-_renderFooter = () => {
-	if (!this.state.isLoading) return null;
-	return (
-		<View
-			style={{
-				paddingVertical: 20,
-				borderTopWidth: 1,
-				borderColor: "#CED0CE"
-			}}
-			>
-				<ActivityIndicator animating size="large" />
-			</View>
-		);
+	_renderHeader = () => {
+		return <SearchBar placeholder="Type Here..." lightTheme round />;
 	};
+
+	_renderFooter = () => {
+		if (!this.state.isLoading) return null;
+		return (
+			<View
+				style={{
+					paddingVertical: 20,
+					borderTopWidth: 1,
+					borderColor: "#CED0CE"
+				}}
+				>
+					<ActivityIndicator animating size="large" />
+				</View>
+			);
+		};
 
 	_renderSeparator = () => {
 		return (

@@ -45,6 +45,66 @@ class SectionListLine extends Component {
     });
   }
 
+  _onPressExecuteAction = (objectId, istanceNumber, itemId) => {
+      HttpRequest.postDataIntoServer(this.state.deviceName,objectId, istanceNumber, itemId);
+  }
+
+  _onPressExecuteActionWithParams = (objectId, istanceNumber, itemId, itemName, type) => {
+    DialogManager.show({
+      title: (
+        <View style={styles.viewTitle}>
+          <Text style={styles.title}>
+            Update {itemName} value
+          </Text>
+        </View>
+      ),
+      width: Dimensions.get('window').width - 100,
+      titleAlign: 'center',
+      SlideAnimation: "bottom",
+      animationDuration: 200,
+      ScaleAnimation: new ScaleAnimation(),
+      children: (
+        <DialogContent>
+          <View>
+            <Text style={styles.text}>
+              {itemName}
+            </Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => this.value = text}
+            />
+          </View>
+          <View style={styles.bottom}>
+            <Button
+              containerStyle={[styles.buttonDialog, {marginRight: 20}]}
+              style={styles.textButton}
+              onPress={() => DialogManager.dismiss()}
+              > Chiudi
+            </Button>
+            <Button
+              style={styles.textButton}
+              containerStyle={styles.buttonDialog}
+              onPress={() => this._makeExecute(objectId,istanceNumber, itemId, this.value, type)}
+              accessibilityLabel="Clicca per confermare la modifica"
+              > Conferma </Button>
+            </View>
+          </DialogContent>
+        )
+      });
+  }
+
+  _makeExecute = (objectId, istanceNumber, itemId, value, type) =>{
+    var correctValue
+    if (type=="Integer" || type=="integer") {
+      correctValue = parseInt(value)
+    } else{
+      correctValue = value;
+    }
+    HttpRequest.postDataIntoServerWithParams(this.state.deviceName,objectId, istanceNumber, itemId, correctValue);
+    DialogManager.dismiss();
+
+  }
+
   _updateAction = (objectId, istanceNumber, itemId, value, type) => {
     var correctValue
     if (type=="Integer" || type=="integer") {
@@ -53,8 +113,10 @@ class SectionListLine extends Component {
       correctValue = value;
     }
     HttpRequest.putDataIntoServer(this.state.deviceName,objectId, istanceNumber, itemId, correctValue);
+    setTimeout(() => {
+      this._onPressReadAction(objectId, istanceNumber, itemId);
+    }, 3000)
     DialogManager.dismiss();
-    this._onPressReadAction(objectId, istanceNumber, itemId);
   }
 
   _onPressObserveAction = (objectId, istanceNumber, itemId) => {
@@ -104,14 +166,14 @@ class SectionListLine extends Component {
               containerStyle={[styles.buttonDialog, {marginRight: 20}]}
               style={styles.textButton}
               onPress={() => DialogManager.dismiss()}
-              accessibilityLabel="Clicca per effettuare l'update del valore"
+              accessibilityLabel="Clicca per chiudere la finestra"
               > Chiudi
             </Button>
             <Button
               style={styles.textButton}
               containerStyle={styles.buttonDialog}
               onPress={() => this._updateAction(objectId,istanceNumber, itemId, this.value, type)}
-              accessibilityLabel="Clicca per effettuare l'update del valore"
+              accessibilityLabel="Clicca per confermare la modifica"
               > Conferma </Button>
             </View>
           </DialogContent>
@@ -142,17 +204,74 @@ class SectionListLine extends Component {
 
   render(){
     const {item, detail, objectId, istanceNumber} = this.props
-    var buttonWrite;
+    var operations;
     if (detail[1] == "RW"){
       var istance = istanceNumber;
-      buttonWrite =
-      <Button
-        containerStyle={[styles.containerButton, {marginRight: 7}]}
-        style={styles.button}
-        onPress={() => this._onPressWriteAction(objectId, istance, item.id, detail[0], detail[2], this.state.itemValue)}
-        accessibilityLabel="Clicca per effettuare l'update del valore"
-        > Write
-      </Button>
+      operations =
+      <View style={styles.operations}>
+        <Button
+          containerStyle={[styles.containerButton, {marginRight: 7}]}
+          style={styles.button}
+          onPress={() => this._onPressWriteAction(objectId, istance, item.id, detail[0], detail[2], this.state.itemValue)}
+          accessibilityLabel="Clicca per effettuare la modifica del valore"
+          > Write
+        </Button>
+        <Button
+          containerStyle={[this.state.pressStatus ? styles.containerButtonAfterPressed : styles.containerButton, {marginRight: 7}]}
+          style={styles.button}
+          onPress={() => this._onPressObserveAction(objectId, istance, item.id)}
+          accessibilityLabel="Clicca per osservare la risorsa"
+          > Observe
+        </Button>
+        <Button
+          containerStyle={styles.containerButton}
+          style={styles.button}
+          onPress={() => this._onPressReadAction(objectId, istance, item.id)}
+          accessibilityLabel="Clicca per leggere il valore della risorsa"
+          > Read
+        </Button>
+      </View>
+    } else if(detail[1] == "R"){
+      var istance = istanceNumber;
+      operations =
+      <View style={styles.operations}>
+        <Button
+          containerStyle={[this.state.pressStatus ? styles.containerButtonAfterPressed : styles.containerButton, {marginRight: 7}]}
+          style={styles.button}
+          onPress={() => this._onPressObserveAction(objectId, istance, item.id)}
+          accessibilityLabel="Clicca per osservare la risorsa"
+          > Observe
+        </Button>
+        <Button
+          containerStyle={styles.containerButton}
+          style={styles.button}
+          onPress={() => this._onPressReadAction(objectId, istance, item.id)}
+          accessibilityLabel="Clicca per leggere la risorsa"
+          > Read
+        </Button>
+      </View>
+    } else if(detail[1] == "E"){
+      var istance = istanceNumber;
+      operations =
+        <View style={styles.operations}>
+          <Button
+            containerStyle={styles.containerButton}
+            style={styles.button}
+            onPress={() => this._onPressExecuteAction(objectId, istance, item.id)}
+            accessibilityLabel="Clicca per eseguire l'execute"
+            > Execute
+          </Button>
+          <Button
+            containerStyle={styles.containerButton}
+            style={styles.button}
+            onPress={() => this._onPressExecuteActionWithParams(objectId, istance, item.id, detail[0], detail[2])}
+            accessibilityLabel="Clicca per eseguire l'excute con parametro"
+            > ExecuteWithParams
+          </Button>
+        </View>
+    } else if( detail[1] == "NONE"){
+      operations =
+        <View style={styles.operations}> </View>
     }
     return(
       <View style={styles.container}>
@@ -162,23 +281,7 @@ class SectionListLine extends Component {
           <Text style={{color:"#CCCAC9", fontSize: 10}}> ({objectId}/{istanceNumber}/{item.id})</Text>
         </Text>
         <Text style={styles.value}>{this.state.itemValue}</Text>
-        <View style={styles.operations}>
-          {buttonWrite}
-          <Button
-            containerStyle={[this.state.pressStatus ? styles.containerButtonAfterPressed : styles.containerButton, {marginRight: 7}]}
-            style={styles.button}
-            onPress={() => this._onPressObserveAction(objectId, istanceNumber, item.id)}
-            accessibilityLabel="Clicca per effettuare l'update del valore"
-            > Observe
-          </Button>
-          <Button
-            containerStyle={styles.containerButton}
-            style={styles.button}
-            onPress={() => this._onPressReadAction(objectId, istanceNumber, item.id)}
-            accessibilityLabel="Clicca per effettuare l'update del valore"
-            > Read
-          </Button>
-        </View>
+        {operations}
       </View>
     );
   }
@@ -269,4 +372,24 @@ const styles = StyleSheet.create({
     color: 'white'
   }
 });
+
+/*
+<View style={styles.operations}>
+  {buttonWrite}
+  <Button
+    containerStyle={[this.state.pressStatus ? styles.containerButtonAfterPressed : styles.containerButton, {marginRight: 7}]}
+    style={styles.button}
+    onPress={() => this._onPressObserveAction(objectId, istanceNumber, item.id)}
+    accessibilityLabel="Clicca per effettuare l'update del valore"
+    > Observe
+  </Button>
+  <Button
+    containerStyle={styles.containerButton}
+    style={styles.button}
+    onPress={() => this._onPressReadAction(objectId, istanceNumber, item.id)}
+    accessibilityLabel="Clicca per effettuare l'update del valore"
+    > Read
+  </Button>
+</View>
+*/
 export default SectionListLine;
