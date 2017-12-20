@@ -6,6 +6,7 @@ import {
 	TextInput,
 	Dimensions,
 	StatusBar,
+	Platform,
 	Navigator
 } from "react-native";
 import { StackNavigator } from 'react-navigation';
@@ -70,6 +71,8 @@ const App = StackNavigator({
    headerMode: 'none'
  });
 
+const marginBottom = Platform.OS === 'ios' ? 130 : 60;
+
 const styles = StyleSheet.create({
 	statusBar: {
 		flexDirection: 'column',
@@ -87,7 +90,7 @@ const styles = StyleSheet.create({
 	},
 	top: {
 		flexDirection: 'column',
-		marginBottom: 130
+		marginBottom: marginBottom
 	},
 	containerButton: {
 		backgroundColor: "#4295a4",
@@ -101,6 +104,7 @@ const styles = StyleSheet.create({
 		color: "white",
 		textAlign: 'center',
 		fontWeight: 'bold',
+
 	},
 	bottom: {
 		flexDirection: 'row',
